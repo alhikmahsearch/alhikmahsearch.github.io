@@ -15,7 +15,7 @@ export default function ContactForm() {
                     <option value="5">5 (Best)</option>
                 </select>
                   <div class="mb-3 mt-3">
-                      <textarea class="form-control" name="Feedback" rows="5" id="comment" placeholder="Feedback" required></textarea>
+                      <textarea class="form-control" name="Feedback" rows="5" id="comment" placeholder="How can we improve this app" required></textarea>
                   </div>
                   <button type="submit" class="btn btn-success mt-3">Send <SendIcon /></button>
 
