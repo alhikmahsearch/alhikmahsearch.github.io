@@ -8,6 +8,8 @@ import InputBase from '@mui/material/InputBase';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import ContactForm from './ContactForm';
 
 const IslamicSearch = () => {
   const [showAlert, setShowAlert] = useState(true);
@@ -153,6 +155,31 @@ const IslamicSearch = () => {
       </LoadingButton>
     </Paper>
 </Box>
+
+
+<Box display="flex" justifyContent="flex-end" alignItems="center" padding={1}>
+      <Button variant="contained" color="success" data-toggle="modal" data-target="#feedbackModal">
+        Feedback
+      </Button>
+</Box>
+
+<div className="modal fade" id="feedbackModal" tabIndex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div className="modal-dialog" role="document">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title" id="feedbackModalLabel">Feedback</h5>
+        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div className="modal-body">
+        <ContactForm />
+      </div>
+    </div>
+  </div>
+</div>
+
+
 {showAlert && 
 <div>
   <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" padding={1}>
