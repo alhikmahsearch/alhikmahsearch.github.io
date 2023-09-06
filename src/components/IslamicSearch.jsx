@@ -69,9 +69,9 @@ const IslamicSearch = () => {
   };
 
   const fetchTextAndTafsir = async (key) => {
-    const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/indopak?verse_key=${key}`)
+    const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/usmani?verse_key=${key}`)
       .then(response => response.json())
-      .then(data => data["verses"][0]["text_indopak"] + '[' + data["verses"][0]["verse_key"].split(':')[1] + ']');
+      .then(data => data["verses"][0]["text_uthmani"] + '[' + data["verses"][0]["verse_key"].split(':')[1] + ']');
   
     const tafsirPromise = fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafsir-maarif-ul-quran/by_ayah/${key}`)
       .then(response => response.json())
@@ -98,7 +98,6 @@ const IslamicSearch = () => {
             combinedTafsirText += tafsirText + ' ';
           }
         });
-  
         return {
           arabicText: combinedArabicText.trim(),
           tafsirText: combinedTafsirText.trim()
