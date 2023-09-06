@@ -24,8 +24,9 @@ const IslamicSearch = () => {
 
   const search = async () => {
     if (window.gtag) {
+      console.log("custom event")
       window.gtag('event', 'query_enter', {
-        'query': userQuery
+        'query': 'hikmah tes'
       });
     }
     setShowAlert(false);
