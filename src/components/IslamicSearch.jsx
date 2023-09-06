@@ -23,6 +23,11 @@ const IslamicSearch = () => {
   const [maarif_ul_quran, set_maarif_ul_quran] = useState([])
 
   const search = async () => {
+    if (window.gtag) {
+      window.gtag('event', 'query_enter', {
+        'query': userQuery
+      });
+    }
     setShowAlert(false);
     setResultList([]);
     setMetadataList([]);
