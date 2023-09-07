@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import CancelIcon from '@mui/icons-material/Cancel';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import '../groupVerse.css';
 
 function GroupVerse(props) {
     const [selectedTafsir, setSelectedTafsir] = useState('tafsir-ibn-kathir');
     const modalId = `bd-example-modal-lg-${props.startVerse}`; // create a unique id based on startVerse or some other unique prop
+
 
     const renderTafsirContent = () => {
       if (selectedTafsir === 'tafsir-ibn-kathir') {
@@ -19,12 +21,39 @@ function GroupVerse(props) {
       }
     };
 
+    const handleTranslationSpeaker = () => {
+      const voices = window.speechSynthesis.getVoices();
+    
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = function() {
+          const voices = window.speechSynthesis.getVoices();
+          speak(voices);
+        };
+      } else {
+        speak(voices);
+      }
+    
+      function speak(voices) {
+        const utterance = new SpeechSynthesisUtterance(props.englishTranslation);
+    
+        if (voices.length > 147) {
+          utterance.voice = voices[147];
+        }
+    
+        window.speechSynthesis.speak(utterance);
+      }
+    };
+
+
     return (
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
             <div className="left-side">
               <p>{props.startVerse}</p>
               <Tooltip title="Tafsir">
               <IconButton variant="text"><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
+              </Tooltip>
+              <Tooltip title="Speak">
+              <IconButton style={{marginTop: 10}} onClick={handleTranslationSpeaker}><VolumeUpIcon /></IconButton>
               </Tooltip>
             </div>
             

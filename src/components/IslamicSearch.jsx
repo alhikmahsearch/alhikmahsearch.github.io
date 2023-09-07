@@ -117,7 +117,6 @@ const IslamicSearch = () => {
     setLoading(false);
   };
 
-
   useEffect(() => {
     fetchAllTexts();
   }, [groupVerses]);
