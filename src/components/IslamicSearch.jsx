@@ -21,6 +21,7 @@ const IslamicSearch = () => {
   const [groupVerses, setGroupVerses] = useState([])
   const [arabicText, setArabicText] = useState([]);
   const [maarif_ul_quran, set_maarif_ul_quran] = useState([])
+  const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]])
 
   const search = async () => {
     
@@ -83,8 +84,12 @@ const IslamicSearch = () => {
     const tafsirPromise = fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafsir-maarif-ul-quran/by_ayah/${key}`)
       .then(response => response.json())
       .then(data => data['tafsir']['text']);
+
+    const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/2/by_ayah/${key}`)
+      .then(response => response.json())
+      .then(data => "https://verses.quran.com/" + data['audio_files'][0]['url'])
   
-    return Promise.all([arabicPromise, tafsirPromise]);
+    return Promise.all([arabicPromise, tafsirPromise, arabicSpeechPromise]);
   };
   
   const fetchAllTexts = async () => {
@@ -94,11 +99,14 @@ const IslamicSearch = () => {
   
         let combinedArabicText = "";
         let combinedTafsirText = "";
+        let speechURLs = []
         const uniqueTafsirTexts = new Set();
   
         allDataInGroup.forEach(data => {
-          const [arabicText, tafsirText] = data;
+          const [arabicText, tafsirText, arabicUrl] = data;
           combinedArabicText += arabicText + ' ';
+
+          speechURLs.push(arabicUrl)
   
           if (!uniqueTafsirTexts.has(tafsirText)) {
             uniqueTafsirTexts.add(tafsirText);
@@ -107,13 +115,15 @@ const IslamicSearch = () => {
         });
         return {
           arabicText: combinedArabicText.trim(),
-          tafsirText: combinedTafsirText.trim()
+          tafsirText: combinedTafsirText.trim(),
+          speechURLs: speechURLs
         };
       })
     );
   
     setArabicText(allGroups.map(group => group.arabicText));
     set_maarif_ul_quran(allGroups.map(group => group.tafsirText));
+    setArabicSpeechURLs(allGroups.map(group => group.speechURLs))
     setLoading(false);
   };
 
@@ -207,7 +217,7 @@ const IslamicSearch = () => {
       {
         arabicText.map((text, index) => (
           <div key={index}>
-            <GroupVerse startVerse={groupVerses[index][0]} arabicText={text} englishTranslation={resultList[index]} tafsir_ibn_kathir={tafsir_ibn_kathir[index]} maarif_ul_quran={maarif_ul_quran[index]}></GroupVerse>
+            <GroupVerse arabicSpeech={arabicSpeechURLs[index]} startVerse={groupVerses[index][0]} arabicText={text} englishTranslation={resultList[index]} tafsir_ibn_kathir={tafsir_ibn_kathir[index]} maarif_ul_quran={maarif_ul_quran[index]}></GroupVerse>
             <Divider />
           </div>
         ))

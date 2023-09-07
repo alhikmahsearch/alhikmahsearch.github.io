@@ -22,26 +22,37 @@ function GroupVerse(props) {
     };
 
     const handleTranslationSpeaker = () => {
-      const voices = window.speechSynthesis.getVoices();
+      console.log("urls:", props.arabicSpeech)
+      const audioUrls = props.arabicSpeech
     
-      if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = function() {
-          const voices = window.speechSynthesis.getVoices();
-          speak(voices);
-        };
-      } else {
-        speak(voices);
-      }
+      let currentAudioIndex = 0;
+      let audio = new Audio(audioUrls[currentAudioIndex]);
     
-      function speak(voices) {
-        const utterance = new SpeechSynthesisUtterance(props.englishTranslation);
+      const playNextAudio = () => {
+        audio = new Audio(audioUrls[currentAudioIndex]);
+        audio.addEventListener('ended', handleAudioEnded);
+        audio.play();
+      };
     
-        if (voices.length > 147) {
-          utterance.voice = voices[147];
+      const handleAudioEnded = () => {
+        currentAudioIndex++;
+        if (currentAudioIndex < audioUrls.length) {
+          playNextAudio();
+        } else {
+          // This is where we start the text-to-speech after all audio files have been played
+          speak();
         }
+      };
     
+      const speak = (voices) => {
+        console.log("speaking")
+        const utterance = new SpeechSynthesisUtterance(props.englishTranslation);
         window.speechSynthesis.speak(utterance);
       }
+    
+      // Start by playing the first audio file
+      playNextAudio();
+      // speak()
     };
 
 
@@ -49,11 +60,11 @@ function GroupVerse(props) {
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
             <div className="left-side">
               <p>{props.startVerse}</p>
-              <Tooltip title="Tafsir">
-              <IconButton variant="text"><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
-              </Tooltip>
               <Tooltip title="Speak">
-              <IconButton style={{marginTop: 10}} onClick={handleTranslationSpeaker}><VolumeUpIcon /></IconButton>
+              <IconButton onClick={handleTranslationSpeaker}><VolumeUpIcon /></IconButton>
+              </Tooltip>
+              <Tooltip title="Tafsir">
+              <IconButton variant="text" style={{marginTop: 8}}><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
               </Tooltip>
             </div>
             
