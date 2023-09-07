@@ -85,7 +85,7 @@ const IslamicSearch = () => {
       .then(response => response.json())
       .then(data => data['tafsir']['text']);
 
-    const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/2/by_ayah/${key}`)
+    const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/4/by_ayah/${key}`)
       .then(response => response.json())
       .then(data => "https://verses.quran.com/" + data['audio_files'][0]['url'])
   
