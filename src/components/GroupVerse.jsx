@@ -6,6 +6,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import CancelIcon from '@mui/icons-material/Cancel';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import '../groupVerse.css';
 
 function GroupVerse(props) {
@@ -55,6 +56,13 @@ function GroupVerse(props) {
       // speak()
     };
 
+    const shareOnWhatsApp = () => {
+      const shareText = `Starting Verse: ${props.startVerse}\nArabic Text: ${props.arabicText}\nEnglish Translation: ${props.englishTranslation}`;
+      const encodedShareText = encodeURIComponent(shareText);
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedShareText}`;
+      window.open(whatsappUrl, '_blank');
+    };
+
 
     return (
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
@@ -65,6 +73,11 @@ function GroupVerse(props) {
               </Tooltip>
               <Tooltip title="Tafsir">
               <IconButton variant="text" style={{marginTop: 8}}><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
+              </Tooltip>
+              <Tooltip title="Share">
+              <IconButton onClick={shareOnWhatsApp} style={{marginTop: 8}}>
+                <WhatsAppIcon />
+              </IconButton>
               </Tooltip>
             </div>
             
