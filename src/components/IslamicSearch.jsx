@@ -23,12 +23,7 @@ const IslamicSearch = () => {
   const [maarif_ul_quran, set_maarif_ul_quran] = useState([])
 
   const search = async () => {
-    if (window.gtag) {
-      console.log("custom event")
-      window.gtag('event', 'query_enter', {
-        'query': 'hikmah tes'
-      });
-    }
+    
     setShowAlert(false);
     setResultList([]);
     setMetadataList([]);
@@ -70,7 +65,13 @@ const IslamicSearch = () => {
     setGroupVerses(currentGroupVerses);
     };
     fetchAllTafsirs();    
-
+    
+    if (window.gtag) {
+      console.log("custom event")
+      window.gtag('event', 'query_enter', {
+        'query': 'hikmah tes'
+      });
+    }
     
   };
 
