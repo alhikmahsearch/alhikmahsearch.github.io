@@ -57,7 +57,7 @@ function GroupVerse(props) {
     };
 
     const shareOnWhatsApp = () => {
-      const shareText = `Starting Verse: ${props.startVerse}\nArabic Text: ${props.arabicText}\nEnglish Translation: ${props.englishTranslation}`;
+      const shareText = `Starting Verse: ${props.startVerse}\nArabic Text:\n\u202B${props.arabicText}\u202C\nEnglish Translation:\n${props.englishTranslation}`;
       const encodedShareText = encodeURIComponent(shareText);
       const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedShareText}`;
       window.open(whatsappUrl, '_blank');
