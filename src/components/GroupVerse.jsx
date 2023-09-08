@@ -14,7 +14,10 @@ import '../groupVerse.css';
 function GroupVerse(props) {
     const [selectedTafsir, setSelectedTafsir] = useState('tafsir-ibn-kathir');
     const [isPlaying, setIsPlaying] = useState(false);
-    const [textSpeechFinsished, setTextSpeechFinished] = useState(true);
+    const [arabicSpeechComplete, setArabicSpeechComplete] = useState(false)
+    const [currentAudio, setCurrentAudio] = useState(null);
+    const [arabicSpeechStart, setArabicSpeechStart] = useState(false);
+  
 
     const modalId = `bd-example-modal-lg-${props.startVerse}`; // create a unique id based on startVerse or some other unique prop
     
@@ -26,40 +29,8 @@ function GroupVerse(props) {
       }
     };
 
-    const handleTranslationSpeaker = () => {
-
-      const speak = () => {
-        if (isPlaying){
-          console.log("Pause playing")
-          // const synth = window.speechSynthesis;
-          // synth.pause();
-          setIsPlaying(false)
-          return
-        }
-        if (!textSpeechFinsished){
-          console.log("resume")
-          // const synth = window.speechSynthesis;
-          // synth.resume();
-          setIsPlaying(true)
-          return;
-        }
-        setTextSpeechFinished(false)
-        setIsPlaying(true)
-        const synth = window.speechSynthesis;
-        synth.cancel();
-        console.log("cancel window")
-        const utterance = new SpeechSynthesisUtterance(props.englishTranslation);
-        window.speechSynthesis.speak(utterance);
-        console.log("speeking")
-        utterance.onend = function(event) {
-          setIsPlaying(false)
-          setTextSpeechFinished(true)
-          console.log("ended speeking")
-        };
-      }
-      speak();
-      return;
-    
+    const handleArabicSpeaker = () => {
+      setArabicSpeechStart(true)
       const audioUrls = props.arabicSpeech
     
       let currentAudioIndex = 0;
@@ -69,6 +40,7 @@ function GroupVerse(props) {
         audio = new Audio(audioUrls[currentAudioIndex]);
         audio.addEventListener('ended', handleAudioEnded);
         audio.play();
+        setCurrentAudio(audio)
       };
     
       const handleAudioEnded = () => {
@@ -76,7 +48,8 @@ function GroupVerse(props) {
         if (currentAudioIndex < audioUrls.length) {
           playNextAudio();
         } else {
-          speak();
+          setArabicSpeechComplete(true)
+          resumeEnglish()
         }
       };
     
@@ -84,14 +57,29 @@ function GroupVerse(props) {
     };
 
     const handlePause = ()=>{
-      props.handleEnglishSpeech(props.startVerse, "pause", "")
       setIsPlaying(false)
+      if (!arabicSpeechComplete){
+        currentAudio.pause()
+        return
+      }
+      props.handleEnglishSpeech(props.startVerse, "pause", "")
+    }
+
+    const resumeEnglish = ()=>{
+      props.handleEnglishSpeech(props.startVerse, "resume", props.englishTranslation)
     }
 
     const handleResume = ()=>{
-      console.log("resuming")
-      props.handleEnglishSpeech(props.startVerse, "resume", props.englishTranslation)
       setIsPlaying(true)
+      if (!arabicSpeechStart){
+        handleArabicSpeaker()
+        return
+      }
+      else if (!arabicSpeechComplete){
+        currentAudio.play()
+        return
+      }
+      resumeEnglish()
     }
 
     const shareOnWhatsApp = () => {
@@ -104,17 +92,24 @@ function GroupVerse(props) {
     useEffect(()=>{
       if (props.nowPlaying != props.startVerse){
         setIsPlaying(false)
-      }
-      
-    })
+        setArabicSpeechStart(false)
+        setArabicSpeechComplete(false)
+        if (currentAudio){
+          currentAudio.pause()
+        }
+      }    
+    }, [props.nowPlaying])
 
     return (
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
             <div className="left-side">
               <p>{props.startVerse}</p>
-              <Tooltip title="Speak">
-              <IconButton>{isPlaying ?  <PauseIcon onClick={handlePause}/> : <PlayArrowIcon onClick={handleResume}/>}</IconButton>
-              </Tooltip>
+              {isPlaying ? <Tooltip title="Pause">
+              <IconButton><PauseIcon onClick={handlePause}/></IconButton>
+              </Tooltip> :
+              <Tooltip title="Play">
+                <IconButton><PlayArrowIcon onClick={handleResume}/></IconButton>
+              </Tooltip>}
               <Tooltip title="Tafsir">
               <IconButton variant="text" style={{marginTop: 8}}><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
               </Tooltip>
