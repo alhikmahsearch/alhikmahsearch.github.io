@@ -1,3 +1,4 @@
+// Import necessary modules and components
 import React, { useEffect, useState } from 'react';
 import GroupVerse from './GroupVerse';
 import '../IslamicSearch.css'; // assuming you have a CSS file with the same styles
@@ -12,6 +13,7 @@ import Button from '@mui/material/Button';
 import ContactForm from './ContactForm';
 
 const IslamicSearch = () => {
+  // Declare state variables
   const [showAlert, setShowAlert] = useState(true);
   const [userQuery, setUserQuery] = useState('');
   const [resultList, setResultList] = useState([]);
@@ -20,9 +22,47 @@ const IslamicSearch = () => {
   const [tafsir_ibn_kathir, set_tafsir_ibn_kathir] =useState([])
   const [groupVerses, setGroupVerses] = useState([])
   const [arabicText, setArabicText] = useState([]);
-  const [maarif_ul_quran, set_maarif_ul_quran] = useState([])
-  const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]])
+  const [maarif_ul_quran, set_maarif_ul_quran] = useState([]);
+  const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]]);
+  const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
 
+
+
+  const handleSpeaking = (groupID, actionType, text="") => {
+    if (currentSpeechGroup == "" || currentSpeechGroup != groupID){
+        setCurrentSpeechGroup(groupID)
+        const synth = window.speechSynthesis;
+        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        utterance.onend = function(event) {
+          setCurrentSpeechGroup("")
+        }
+        return
+    }
+    if (actionType == "pause"){
+      const synth = window.speechSynthesis;
+      synth.pause();
+    }
+    else if(actionType == "resume"){
+      if (currentSpeechGroup == ""){
+        const synth = window.speechSynthesis;
+        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(utterance);
+        utterance.onend = function(event) {
+          setCurrentSpeechGroup("")
+        }
+        return
+      }
+      const synth = window.speechSynthesis;
+      synth.resume();
+    }
+  }
+
+
+  
+  // Function to handle search request
   const search = async () => {
     
     setShowAlert(false);
@@ -32,6 +72,7 @@ const IslamicSearch = () => {
     setArabicText([])
     setLoading(true);
     if (userQuery.length == 0) return
+    // API call for relevant Quranic verses
     const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
       method: "POST",
       headers: {
@@ -47,6 +88,7 @@ const IslamicSearch = () => {
       setMetadataList(data["metadatas"][0]);
     }
 
+    // Function to fetch Tafsir by Ibn Kathir and the list of verses in one verseKey group
     const fetchTafsir = async (verseKey) => {
         const response = await fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafisr-ibn-kathir/by_ayah/${verseKey}`);
         const data = await response.json();
@@ -55,7 +97,8 @@ const IslamicSearch = () => {
           verses: Object.keys(data['tafsir']['verses']),
         };
       };
-      
+
+    // Function to fetch all groups Tafsir by Ibn Kathir data
     const fetchAllTafsirs = async () => {
     const startVerseKeys = data["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
     const tafsirs = await Promise.all(startVerseKeys.map(fetchTafsir));
@@ -76,6 +119,7 @@ const IslamicSearch = () => {
     
   };
 
+  // Function to fetch Arahic Text, Maarid-ul-Quran, and url of one verse
   const fetchTextAndTafsir = async (key) => {
     const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/usmani?verse_key=${key}`)
       .then(response => response.json())
@@ -92,6 +136,7 @@ const IslamicSearch = () => {
     return Promise.all([arabicPromise, tafsirPromise, arabicSpeechPromise]);
   };
   
+  // Function to fetch Arahic Text, Maarid-ul-Quran, and url of all groups of verses
   const fetchAllTexts = async () => {
     const allGroups = await Promise.all(
       groupVerses.map(async (group) => {
@@ -217,7 +262,7 @@ const IslamicSearch = () => {
       {
         arabicText.map((text, index) => (
           <div key={index}>
-            <GroupVerse arabicSpeech={arabicSpeechURLs[index]} startVerse={groupVerses[index][0]} arabicText={text} englishTranslation={resultList[index]} tafsir_ibn_kathir={tafsir_ibn_kathir[index]} maarif_ul_quran={maarif_ul_quran[index]}></GroupVerse>
+            <GroupVerse nowPlaying={currentSpeechGroup} handleEnglishSpeech={(groupID, actionType, text) => handleSpeaking(groupID, actionType, text)} arabicSpeech={arabicSpeechURLs[index]} startVerse={groupVerses[index][0]} arabicText={text} englishTranslation={resultList[index]} tafsir_ibn_kathir={tafsir_ibn_kathir[index]} maarif_ul_quran={maarif_ul_quran[index]}></GroupVerse>
             <Divider />
           </div>
         ))
