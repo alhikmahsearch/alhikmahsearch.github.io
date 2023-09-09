@@ -64,6 +64,8 @@ const IslamicSearch = () => {
   
   // Function to handle search request
   const search = async () => {
+
+    if (userQuery.length == 0) return
     
     setShowAlert(false);
     setResultList([]);
@@ -71,7 +73,7 @@ const IslamicSearch = () => {
     set_tafsir_ibn_kathir([])
     setArabicText([])
     setLoading(true);
-    if (userQuery.length == 0) return
+    
     // API call for relevant Quranic verses
     const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
       method: "POST",
