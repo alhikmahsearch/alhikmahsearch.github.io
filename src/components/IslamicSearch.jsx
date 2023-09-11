@@ -11,6 +11,8 @@ import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import ContactForm from './ContactForm';
+import Pagination from '@mui/material/Pagination';
+
 
 const IslamicSearch = () => {
   // Declare state variables
@@ -25,6 +27,8 @@ const IslamicSearch = () => {
   const [maarif_ul_quran, set_maarif_ul_quran] = useState([]);
   const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]]);
   const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
 
 
 
@@ -63,7 +67,7 @@ const IslamicSearch = () => {
 
   
   // Function to handle search request
-  const search = async () => {
+  const search = async (page_num) => {
 
     if (userQuery.length == 0) return
     
@@ -73,8 +77,17 @@ const IslamicSearch = () => {
     set_tafsir_ibn_kathir([])
     setArabicText([])
     setLoading(true);
-    
+    setCurrentPage(page_num)
+    // http://127.0.0.1:5000/Quran
     // API call for relevant Quranic verses
+    // const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ user_query: userQuery }),
+    // });
+    console.log("page number:", page_num)
     const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
       method: "POST",
       headers: {
@@ -84,6 +97,8 @@ const IslamicSearch = () => {
     });
 
     const data = await response.json();
+    data["documents"][0] = data["documents"][0].slice((page_num-1)*10, (page_num)*10);
+    data["metadatas"][0] = data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)
 
     if (data && Array.isArray(data["documents"]) && Array.isArray(data["metadatas"])) {
       setResultList(data["documents"][0]);
@@ -208,7 +223,7 @@ const IslamicSearch = () => {
         type='Submit'
           style={{paddingRight: "17px"}}
           size="small"
-          onClick={search}
+          onClick={() =>{search(1)}}
           endIcon={<SearchIcon />}
           loading={loading}
           loadingPosition="center"
@@ -269,7 +284,11 @@ const IslamicSearch = () => {
           </div>
         ))
       }      
-      
+      {!loading && !showAlert && 
+      <Box display="flex" justifyContent="center" alignItems="center" padding={4}>
+        <Pagination page={currentPage} count={10} color="primary" onChange={(event, value) => {search(value)}}/>
+        </Box>
+      }
     </div>
   );
 };
