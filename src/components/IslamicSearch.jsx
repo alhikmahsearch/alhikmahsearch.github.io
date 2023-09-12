@@ -28,7 +28,7 @@ const IslamicSearch = () => {
   const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]]);
   const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [allData, setAllData] = useState();
 
 
 
@@ -67,7 +67,7 @@ const IslamicSearch = () => {
 
   
   // Function to handle search request
-  const search = async (page_num) => {
+  const search = async (page_num, search_bar=false) => {
 
     if (userQuery.length == 0) return
     
@@ -78,31 +78,30 @@ const IslamicSearch = () => {
     setArabicText([])
     setLoading(true);
     setCurrentPage(page_num)
-    // http://127.0.0.1:5000/Quran
-    // API call for relevant Quranic verses
-    // const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ user_query: userQuery }),
-    // });
+
     console.log("page number:", page_num)
-    const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
+    let tempData = ""
+    if (search_bar){
+      const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ user_query: userQuery }),
     });
-
     const data = await response.json();
-    data["documents"][0] = data["documents"][0].slice((page_num-1)*10, (page_num)*10);
-    data["metadatas"][0] = data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)
+    setAllData(data)
+    tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+    }
+    else{
+      tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+    }
+    
+    
 
-    if (data && Array.isArray(data["documents"]) && Array.isArray(data["metadatas"])) {
-      setResultList(data["documents"][0]);
-      setMetadataList(data["metadatas"][0]);
+    if (tempData && Array.isArray(tempData["documents"]) && Array.isArray(tempData["metadatas"])) {
+      setResultList(tempData["documents"][0]);
+      setMetadataList(tempData["metadatas"][0]);
     }
 
     // Function to fetch Tafsir by Ibn Kathir and the list of verses in one verseKey group
@@ -117,7 +116,7 @@ const IslamicSearch = () => {
 
     // Function to fetch all groups Tafsir by Ibn Kathir data
     const fetchAllTafsirs = async () => {
-    const startVerseKeys = data["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
+    const startVerseKeys = tempData["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
     const tafsirs = await Promise.all(startVerseKeys.map(fetchTafsir));
     
     const tafsirTexts = tafsirs.map(tafsir => tafsir.text);
@@ -223,7 +222,7 @@ const IslamicSearch = () => {
         type='Submit'
           style={{paddingRight: "17px"}}
           size="small"
-          onClick={() =>{search(1)}}
+          onClick={() =>{search(1, true)}}
           endIcon={<SearchIcon />}
           loading={loading}
           loadingPosition="center"
