@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import GroupVerse from './GroupVerse';
 import '../IslamicSearch.css'; // assuming you have a CSS file with the same styles
+import CustomDrawer from './CustomDrawer';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@mui/material/Paper';
@@ -29,6 +30,7 @@ const IslamicSearch = () => {
   const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [allData, setAllData] = useState();
+  const [translationID, setTranslationID] = useState("131")
 
 
 
@@ -64,7 +66,10 @@ const IslamicSearch = () => {
     }
   }
 
-
+  const handleSelectTranslation = (event)=>{
+    setTranslationID(event.target.value)
+    fetchAllTexts(event.target.value, true)
+  }
   
   // Function to handle search request
   const search = async (page_num, search_bar=false) => {
@@ -135,58 +140,96 @@ const IslamicSearch = () => {
     
   };
 
-  // Function to fetch Arahic Text, Maarid-ul-Quran, and url of one verse
-  const fetchTextAndTafsir = async (key) => {
-    const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/usmani?verse_key=${key}`)
-      .then(response => response.json())
-      .then(data => data["verses"][0]["text_uthmani"] + '[' + data["verses"][0]["verse_key"].split(':')[1] + ']');
-  
-    const tafsirPromise = fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafsir-maarif-ul-quran/by_ayah/${key}`)
-      .then(response => response.json())
-      .then(data => data['tafsir']['text']);
+// Function to fetch Arabic Text, Maarid-ul-Quran, and URL of one verse
+const fetchTextAndTafsir = async (key) => {
+  const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/usmani?verse_key=${key}`)
+    .then(response => response.json())
+    .then(data => data["verses"][0]["text_uthmani"] + '[' + data["verses"][0]["verse_key"].split(':')[1] + ']');
 
-    const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/4/by_ayah/${key}`)
-      .then(response => response.json())
-      .then(data => "https://verses.quran.com/" + data['audio_files'][0]['url'])
-  
-    return Promise.all([arabicPromise, tafsirPromise, arabicSpeechPromise]);
-  };
-  
-  // Function to fetch Arahic Text, Maarid-ul-Quran, and url of all groups of verses
-  const fetchAllTexts = async () => {
-    const allGroups = await Promise.all(
-      groupVerses.map(async (group) => {
-        const allDataInGroup = await Promise.all(group.map(fetchTextAndTafsir));
-  
-        let combinedArabicText = "";
-        let combinedTafsirText = "";
-        let speechURLs = []
-        const uniqueTafsirTexts = new Set();
-  
-        allDataInGroup.forEach(data => {
-          const [arabicText, tafsirText, arabicUrl] = data;
-          combinedArabicText += arabicText + ' ';
+  const tafsirPromise = fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafsir-maarif-ul-quran/by_ayah/${key}`)
+    .then(response => response.json())
+    .then(data => data['tafsir']['text']);
 
-          speechURLs.push(arabicUrl)
+  const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/4/by_ayah/${key}`)
+    .then(response => response.json())
+    .then(data => "https://verses.quran.com/" + data['audio_files'][0]['url'])
+
+  return Promise.all([arabicPromise, tafsirPromise, arabicSpeechPromise]);
+};
+
+// Function to fetch Arabic Text, Maarid-ul-Quran, and URL of translation text
+const fetchTranslationText = async (key, languageID, modified) => {
+  if (languageID != 131 || modified== true) {
+    const translationPromise = fetch(`https://api.quran.com/api/v4/quran/translations/${languageID}?verse_key=${key}`)
+      .then(response => response.json())
+      .then(data => data['translations'][0]['text']);
+
+    return translationPromise;
+  } else {
+    return null; // If languageID is 131, return null as we don't need to fetch translation.
+  }
   
-          if (!uniqueTafsirTexts.has(tafsirText)) {
-            uniqueTafsirTexts.add(tafsirText);
-            combinedTafsirText += tafsirText + ' ';
-          }
-        });
+};
+
+// Function to fetch Arabic Text, Maarid-ul-Quran, Tafsir, and translation text if needed
+const fetchAllTexts = async (changeLanguage=undefined, modified=false) => {
+  if (changeLanguage == undefined){
+    changeLanguage = translationID
+  }
+  const allGroups = await Promise.all(
+    groupVerses.map(async (group) => {
+      const allDataInGroup = await Promise.all(group.map(async (verseKey) => {
+        const [arabicText, tafsirText, arabicUrl] = await fetchTextAndTafsir(verseKey);
+        const translationText = await fetchTranslationText(verseKey, changeLanguage, modified);
+
         return {
-          arabicText: combinedArabicText.trim(),
-          tafsirText: combinedTafsirText.trim(),
-          speechURLs: speechURLs
+          arabicText,
+          tafsirText,
+          translationText,
+          arabicUrl
         };
-      })
-    );
-  
-    setArabicText(allGroups.map(group => group.arabicText));
-    set_maarif_ul_quran(allGroups.map(group => group.tafsirText));
-    setArabicSpeechURLs(allGroups.map(group => group.speechURLs))
-    setLoading(false);
-  };
+      }));
+
+      let combinedArabicText = "";
+      let combinedTafsirText = "";
+      let combinedTranslationText = "";
+      let speechURLs = []
+      const uniqueTafsirTexts = new Set();
+
+      allDataInGroup.forEach(data => {
+        const { arabicText, tafsirText, translationText, arabicUrl } = data;
+        combinedArabicText += arabicText + ' ';
+        speechURLs.push(arabicUrl);
+
+        if (translationText) {
+          combinedTranslationText += translationText + ' ';
+        }
+
+        if (!uniqueTafsirTexts.has(tafsirText)) {
+          uniqueTafsirTexts.add(tafsirText);
+          combinedTafsirText += tafsirText + ' ';
+        }
+      });
+
+      return {
+        arabicText: combinedArabicText.trim(),
+        tafsirText: combinedTafsirText.trim(),
+        translationText: combinedTranslationText.trim(),
+        speechURLs: speechURLs
+      };
+    })
+  );
+
+  setArabicText(allGroups.map(group => group.arabicText));
+  set_maarif_ul_quran(allGroups.map(group => group.tafsirText));
+  try{
+    if (allGroups[0]["translationText"] != "") setResultList(allGroups.map(group => group.translationText))
+  }
+catch{
+}
+  setArabicSpeechURLs(allGroups.map(group => group.speechURLs))
+  setLoading(false);
+};
 
   useEffect(() => {
     fetchAllTexts();
@@ -199,7 +242,9 @@ const IslamicSearch = () => {
 
   return (
     <div >
+      
       <h1>Al-Hikmah Search</h1>
+      <CustomDrawer  handleSelectTranslation={handleSelectTranslation} translationSelected={translationID}/>
       
 <Box display="flex"
   justifyContent="center"
@@ -288,6 +333,11 @@ const IslamicSearch = () => {
         <Pagination page={currentPage} count={10} color="primary" onChange={(event, value) => {search(value)}}/>
         </Box>
       }
+
+
+
+
+      
     </div>
   );
 };
