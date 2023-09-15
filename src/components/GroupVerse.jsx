@@ -121,7 +121,7 @@ function GroupVerse(props) {
               </IconButton>
               </Tooltip>
               <Tooltip title="See in Surah">
-                <Link href={`https://quran.com/${(props.startVerse.split(":"))[0]}?startingVerse=${(props.startVerse.split(":"))[1]}`} color="inherit" style={{marginTop: 8, marginLeft: 8}}><ArrowForwardIcon/></Link>
+                <Link href={`https://quran.com/${(props.startVerse.split(":"))[0]}?startingVerse=${(props.startVerse.split(":"))[1]}`} color="inherit" style={{marginTop: 10, marginLeft: 8}}><ArrowForwardIcon color='action'/></Link>
               </Tooltip>
             </div>
             
