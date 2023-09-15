@@ -32,7 +32,10 @@ const IslamicSearch = () => {
   const [allData, setAllData] = useState();
   const [translationID, setTranslationID] = useState("131")
 
-
+  const  removeFooters = (s) => {
+    return s.replace(/<sup[^>]*>.*?<\/sup>/g, '');
+  }
+  
 
   const handleSpeaking = (groupID, actionType, text="") => {
     if (currentSpeechGroup == "" || currentSpeechGroup != groupID){
@@ -162,7 +165,7 @@ const fetchTranslationText = async (key, languageID, modified) => {
   if (languageID != 131 || modified== true) {
     const translationPromise = fetch(`https://api.quran.com/api/v4/quran/translations/${languageID}?verse_key=${key}`)
       .then(response => response.json())
-      .then(data => data['translations'][0]['text']);
+      .then(data => removeFooters(data['translations'][0]['text']));
 
     return translationPromise;
   } else {
