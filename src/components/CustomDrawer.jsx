@@ -53,6 +53,15 @@ export default function CustomDrawer(props) {
           </optgroup>
         </Select>
         </ListItem>
+        <ListItem>
+        <InputLabel htmlFor="recitatoinSelector">Reciation:</InputLabel>
+        <Select native value={props.recitationSelected} id="recitatoinSelector" onChange={props.handleSelectRecitation} style={{maxWidth: 200}}>
+          <option value={"4"}>Abu Bakr al-Shatri</option>
+          <option value={"3"}>Abdur-Rahman as-Sudais</option>
+          <option value={"1"}>AbdulBaset AbdulSamad (Mujawwad)</option>
+          <option value={"2"}>AbdulBaset AbdulSamad (Murattal)</option>
+        </Select>
+        </ListItem>
       </List>
     </Box>
   );

@@ -31,6 +31,7 @@ const IslamicSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [allData, setAllData] = useState();
   const [translationID, setTranslationID] = useState("131")
+  const [recitationId, setRecitationID] = useState("4")
 
   const  removeFooters = (s) => {
     return s.replace(/<sup[^>]*>.*?<\/sup>/g, '');
@@ -71,7 +72,12 @@ const IslamicSearch = () => {
 
   const handleSelectTranslation = (event)=>{
     setTranslationID(event.target.value)
-    fetchAllTexts(event.target.value, true)
+    fetchAllTexts(event.target.value, true, undefined)
+  }
+
+  const handleSelectRecitation = (event) => {
+    setRecitationID(event.target.value)
+    fetchAllTexts(undefined, false, event.target.value)
   }
   
   // Function to handle search request
@@ -144,7 +150,7 @@ const IslamicSearch = () => {
   };
 
 // Function to fetch Arabic Text, Maarid-ul-Quran, and URL of one verse
-const fetchTextAndTafsir = async (key) => {
+const fetchTextAndTafsir = async (key, recitatation) => {
   const arabicPromise = fetch(`https://api.quran.com/api/v4/quran/verses/usmani?verse_key=${key}`)
     .then(response => response.json())
     .then(data => data["verses"][0]["text_uthmani"] + '[' + data["verses"][0]["verse_key"].split(':')[1] + ']');
@@ -153,7 +159,7 @@ const fetchTextAndTafsir = async (key) => {
     .then(response => response.json())
     .then(data => data['tafsir']['text']);
 
-  const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/4/by_ayah/${key}`)
+  const arabicSpeechPromise = fetch(`https://api.quran.com/api/v4/recitations/${recitatation}/by_ayah/${key}`)
     .then(response => response.json())
     .then(data => "https://verses.quran.com/" + data['audio_files'][0]['url'])
 
@@ -175,14 +181,17 @@ const fetchTranslationText = async (key, languageID, modified) => {
 };
 
 // Function to fetch Arabic Text, Maarid-ul-Quran, Tafsir, and translation text if needed
-const fetchAllTexts = async (changeLanguage=undefined, modified=false) => {
+const fetchAllTexts = async (changeLanguage=undefined, modified=false, changeRecitation=undefined) => {
   if (changeLanguage == undefined){
     changeLanguage = translationID
+  }
+  if (changeRecitation == undefined){
+    changeRecitation = recitationId
   }
   const allGroups = await Promise.all(
     groupVerses.map(async (group) => {
       const allDataInGroup = await Promise.all(group.map(async (verseKey) => {
-        const [arabicText, tafsirText, arabicUrl] = await fetchTextAndTafsir(verseKey);
+        const [arabicText, tafsirText, arabicUrl] = await fetchTextAndTafsir(verseKey ,changeRecitation);
         const translationText = await fetchTranslationText(verseKey, changeLanguage, modified);
 
         return {
@@ -247,7 +256,7 @@ catch{
     <div >
       
       <h1>Al-Hikmah Search</h1>
-      <CustomDrawer  handleSelectTranslation={handleSelectTranslation} translationSelected={translationID}/>
+      <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/>
       
 <Box display="flex"
   justifyContent="center"
