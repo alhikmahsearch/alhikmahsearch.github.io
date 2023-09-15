@@ -49,9 +49,9 @@ function GroupVerse(props) {
         currentAudioIndex++;
         if (currentAudioIndex < audioUrls.length) {
           playNextAudio();
-        } else {
-          setArabicSpeechComplete(true)
-          resumeEnglish()
+        }
+        else{
+          setIsPlaying(false)
         }
       };
     
@@ -60,11 +60,11 @@ function GroupVerse(props) {
 
     const handlePause = ()=>{
       setIsPlaying(false)
-      if (!arabicSpeechComplete){
-        currentAudio.pause()
-        return
-      }
-      props.handleEnglishSpeech(props.startVerse, "pause", "")
+      // if (!arabicSpeechComplete){
+      //   currentAudio.pause()
+      //   return
+      // }
+      // props.handleEnglishSpeech(props.startVerse, "pause", "")
     }
 
     const resumeEnglish = ()=>{
@@ -81,7 +81,7 @@ function GroupVerse(props) {
         currentAudio.play()
         return
       }
-      resumeEnglish()
+      // resumeEnglish()
     }
 
     const shareOnWhatsApp = () => {
@@ -126,7 +126,7 @@ function GroupVerse(props) {
             </div>
             
             <div className="right-side">
-              <p dir="rtl">{props.arabicText}</p>
+              <p dir="rtl" style={{fontSize: 30}}>{props.arabicText}</p>
               <p>{props.englishTranslation}</p>
             </div>
             

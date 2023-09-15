@@ -31,7 +31,7 @@ const IslamicSearch = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [allData, setAllData] = useState();
   const [translationID, setTranslationID] = useState("131")
-  const [recitationId, setRecitationID] = useState("4")
+  const [recitationId, setRecitationID] = useState("1")
 
   const  removeFooters = (s) => {
     return s.replace(/<sup[^>]*>.*?<\/sup>/g, '');
