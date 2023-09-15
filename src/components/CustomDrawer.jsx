@@ -41,11 +41,15 @@ export default function CustomDrawer(props) {
           <option aria-label="None" value="" />
           <optgroup label="English">
             <option selected value={"131"}>Dr. Mustafa Khattab</option>
+            <option value={"84"}>Mufti Taqi Usmani</option>
             <option value={"20"}>Saheeh International</option>
+            <option value={"95"}>Tafheem e Qur'an - Syed Abu Ali Maududi</option>
+            <option value={"823"}>Maulana Whaiduddin Khan</option>
           </optgroup>
           <optgroup label="Urdu">
             <option value={"158"}>Bayan-ul-Quran - Dr. Israr Ahmad</option>
             <option value={"97"}>Tafheem e Qur'an - Syed Abu Ali Maududi</option>
+            <option value={"819"}>Maulana Whaiduddin Khan</option>
           </optgroup>
         </Select>
         </ListItem>
