@@ -15,7 +15,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 
-
 export default function CustomDrawer(props) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [translationSelect, setTranslationSelect] = useState(131)
@@ -33,6 +32,7 @@ export default function CustomDrawer(props) {
       sx={{ width : "100%", maxWidth: 400 }}
       role="presentation"
 >
+  <IconButton><MenuIcon onClick={toggleDrawer(false)}/></IconButton>
       <List>
         <ListItem>
             
