@@ -60,6 +60,7 @@ function GroupVerse(props) {
 
     const handlePause = ()=>{
       setIsPlaying(false)
+      currentAudio.pause()
       // if (!arabicSpeechComplete){
       //   currentAudio.pause()
       //   return

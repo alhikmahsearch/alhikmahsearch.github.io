@@ -30,8 +30,8 @@ const IslamicSearch = () => {
   const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [allData, setAllData] = useState();
-  const [translationID, setTranslationID] = useState("131")
-  const [recitationId, setRecitationID] = useState("1")
+  const [translationID, setTranslationID] = useState(localStorage.getItem('ahs_translationID') || "131")
+  const [recitationId, setRecitationID] = useState(localStorage.getItem('ahs_recitationID') || "1")
 
   const  removeFooters = (s) => {
     return s.replace(/<sup[^>]*>.*?<\/sup>/g, '');
@@ -71,11 +71,13 @@ const IslamicSearch = () => {
   }
 
   const handleSelectTranslation = (event)=>{
+    localStorage.setItem('ahs_translationID', event.target.value);
     setTranslationID(event.target.value)
     fetchAllTexts(event.target.value, true, undefined)
   }
 
   const handleSelectRecitation = (event) => {
+    localStorage.setItem('ahs_recitationID', event.target.value);
     setRecitationID(event.target.value)
     fetchAllTexts(undefined, false, event.target.value)
   }
@@ -254,7 +256,6 @@ catch{
 
   return (
     <div >
-      
       <h1>Al-Hikmah Search</h1>
       <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/>
       
