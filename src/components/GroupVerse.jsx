@@ -5,7 +5,6 @@ import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import CancelIcon from '@mui/icons-material/Cancel';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -51,6 +50,7 @@ function GroupVerse(props) {
           playNextAudio();
         }
         else{
+          setArabicSpeechStart(false)
           setIsPlaying(false)
         }
       };
@@ -61,15 +61,6 @@ function GroupVerse(props) {
     const handlePause = ()=>{
       setIsPlaying(false)
       currentAudio.pause()
-      // if (!arabicSpeechComplete){
-      //   currentAudio.pause()
-      //   return
-      // }
-      // props.handleEnglishSpeech(props.startVerse, "pause", "")
-    }
-
-    const resumeEnglish = ()=>{
-      props.handleEnglishSpeech(props.startVerse, "resume", props.englishTranslation)
     }
 
     const handleResume = ()=>{
@@ -93,14 +84,12 @@ function GroupVerse(props) {
     };
 
     useEffect(()=>{
-      if (props.nowPlaying != props.startVerse){
-        setIsPlaying(false)
-        setArabicSpeechStart(false)
-        setArabicSpeechComplete(false)
-        if (currentAudio){
-          currentAudio.pause()
-        }
-      }    
+      setIsPlaying(false)
+      setArabicSpeechStart(false)
+      setArabicSpeechComplete(false)
+      if (currentAudio){
+        currentAudio.pause()
+      }  
     }, [props.nowPlaying])
 
     return (
@@ -154,10 +143,7 @@ function GroupVerse(props) {
                     <IconButton>
                     <CancelIcon data-dismiss="modal"/>
                     </IconButton>
-                  </Tooltip>
-                  
-                  
-                  
+                  </Tooltip>      
               </div>
 
                   <div className="modal-body" dangerouslySetInnerHTML={{ __html: renderTafsirContent() }}>

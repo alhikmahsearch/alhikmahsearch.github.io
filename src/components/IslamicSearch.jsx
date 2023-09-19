@@ -1,18 +1,24 @@
 // Import necessary modules and components
 import React, { useEffect, useState } from 'react';
-import GroupVerse from './GroupVerse';
 import '../IslamicSearch.css'; // assuming you have a CSS file with the same styles
 import CustomDrawer from './CustomDrawer';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box'
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import ContactForm from './ContactForm';
 import Pagination from '@mui/material/Pagination';
+import QuranResults from './QuranResults';
+import HadithResults from './HadithResults';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
+import masjid from '../images/image.png'
+import kabaa from '../images/kabaa.jpeg'
+
 
 
 const IslamicSearch = () => {
@@ -28,48 +34,40 @@ const IslamicSearch = () => {
   const [maarif_ul_quran, set_maarif_ul_quran] = useState([]);
   const [arabicSpeechURLs, setArabicSpeechURLs] = useState([[]]);
   const [currentSpeechGroup, setCurrentSpeechGroup] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageQuran, setCurrentPageQuran] = useState(1);
+  const [currentPageHadith, setCurrentPageHadith] = useState(1);
   const [allData, setAllData] = useState();
   const [translationID, setTranslationID] = useState(localStorage.getItem('ahs_translationID') || "131")
   const [recitationId, setRecitationID] = useState(localStorage.getItem('ahs_recitationID') || "1")
+  const [selectQuranHadith, setSelectQuranHadith] = useState(0)
+  const [allHadithData, setAllHadithData] = useState([])
+  const [currentPageHadithData, setCurrentPageHadithData] = useState([])
 
   const  removeFooters = (s) => {
     return s.replace(/<sup[^>]*>.*?<\/sup>/g, '');
   }
-  
 
-  const handleSpeaking = (groupID, actionType, text="") => {
-    if (currentSpeechGroup == "" || currentSpeechGroup != groupID){
-        setCurrentSpeechGroup(groupID)
-        const synth = window.speechSynthesis;
-        synth.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        window.speechSynthesis.speak(utterance);
-        utterance.onend = function(event) {
-          setCurrentSpeechGroup("")
-        }
-        return
+
+  const handleQuranSelect = ()=>{
+    // skip if already in Quran or no results yet shown
+    if (selectQuranHadith == 0 || allHadithData.length == 0) {
+      setSelectQuranHadith(0)
+      return
     }
-    if (actionType == "pause"){
-      const synth = window.speechSynthesis;
-      synth.pause();
-    }
-    else if(actionType == "resume"){
-      if (currentSpeechGroup == ""){
-        const synth = window.speechSynthesis;
-        synth.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        window.speechSynthesis.speak(utterance);
-        utterance.onend = function(event) {
-          setCurrentSpeechGroup("")
-        }
-        return
-      }
-      const synth = window.speechSynthesis;
-      synth.resume();
-    }
+    setSelectQuranHadith(0)
+    search(currentPageQuran, false, 0)
   }
-
+  
+  const handleHadithSelect = ()=>{
+    // skip if already in hadith or no results yet shown
+    if (selectQuranHadith == 1 || resultList.length == 0) {
+      setSelectQuranHadith(1)
+      return
+    }
+    setSelectQuranHadith(1)
+    search(currentPageHadith, false, 1)
+  }
+ 
   const handleSelectTranslation = (event)=>{
     localStorage.setItem('ahs_translationID', event.target.value);
     setTranslationID(event.target.value)
@@ -83,64 +81,91 @@ const IslamicSearch = () => {
   }
   
   // Function to handle search request
-  const search = async (page_num, search_bar=false) => {
-
+  const search = async (page_num, search_bar=false, search_type=undefined) => {
+    if (search_type==undefined) search_type = selectQuranHadith 
     if (userQuery.length == 0) return
-    
-    setShowAlert(false);
-    setResultList([]);
-    setMetadataList([]);
-    set_tafsir_ibn_kathir([])
-    setArabicText([])
-    setLoading(true);
-    setCurrentPage(page_num)
-
-    console.log("page number:", page_num)
-    let tempData = ""
+    // go to empty states when search entered
     if (search_bar){
-      const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_query: userQuery }),
-    });
-    const data = await response.json();
-    setAllData(data)
-    tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+      setShowAlert(false);
+      setResultList([]);
+      setMetadataList([]);
+      set_tafsir_ibn_kathir([])
+      setArabicText([])
+      setLoading(true);      
+
+      setAllHadithData([])
+    }
+
+    if (search_type == 0){
+      setCurrentPageQuran(page_num)
+      let tempData = ""
+      if (search_bar || resultList.length==0){
+        setCurrentPageQuran(1)
+        setLoading(true)
+        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_query: userQuery }),
+      });
+      const data = await response.json();
+      setAllData(data)
+      tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+      }
+      else{
+        tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+      }
+
+      if (tempData && Array.isArray(tempData["documents"]) && Array.isArray(tempData["metadatas"])) {
+        setResultList(tempData["documents"][0]);
+        setMetadataList(tempData["metadatas"][0]);
+      }
+
+      // Function to fetch Tafsir by Ibn Kathir and the list of verses in one verseKey group
+      const fetchTafsir = async (verseKey) => {
+          const response = await fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafisr-ibn-kathir/by_ayah/${verseKey}`);
+          const data = await response.json();
+          return {
+            text: data['tafsir']['text'],
+            verses: Object.keys(data['tafsir']['verses']),
+          };
+        };
+
+      // Function to fetch all groups Tafsir by Ibn Kathir data
+      const fetchAllTafsirs = async () => {
+      const startVerseKeys = tempData["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
+      const tafsirs = await Promise.all(startVerseKeys.map(fetchTafsir));
+      
+      const tafsirTexts = tafsirs.map(tafsir => tafsir.text);
+      const currentGroupVerses = tafsirs.map(tafsir => tafsir.verses);
+      set_tafsir_ibn_kathir(tafsirTexts);
+      setGroupVerses(currentGroupVerses);
+      };
+      fetchAllTafsirs();  
     }
     else{
-      tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+      setCurrentPageHadith(page_num)
+      if (search_bar || allHadithData.length==0){
+        setLoading(true)
+        setCurrentPageHadith(1)
+        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Hadith", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_query: userQuery }),
+      });
+      const data = await response.json();
+      setAllHadithData(data)
+      setCurrentPageHadithData(data.slice((page_num-1)*10, (page_num)*10))
+      }
+      else{
+        setCurrentPageHadithData(allHadithData.slice((page_num-1)*10, (page_num)*10))
+      }
+      setLoading(false);
     }
-    
-    
-
-    if (tempData && Array.isArray(tempData["documents"]) && Array.isArray(tempData["metadatas"])) {
-      setResultList(tempData["documents"][0]);
-      setMetadataList(tempData["metadatas"][0]);
-    }
-
-    // Function to fetch Tafsir by Ibn Kathir and the list of verses in one verseKey group
-    const fetchTafsir = async (verseKey) => {
-        const response = await fetch(`https://api.qurancdn.com/api/qdc/tafsirs/en-tafisr-ibn-kathir/by_ayah/${verseKey}`);
-        const data = await response.json();
-        return {
-          text: data['tafsir']['text'],
-          verses: Object.keys(data['tafsir']['verses']),
-        };
-      };
-
-    // Function to fetch all groups Tafsir by Ibn Kathir data
-    const fetchAllTafsirs = async () => {
-    const startVerseKeys = tempData["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
-    const tafsirs = await Promise.all(startVerseKeys.map(fetchTafsir));
-    
-    const tafsirTexts = tafsirs.map(tafsir => tafsir.text);
-    const currentGroupVerses = tafsirs.map(tafsir => tafsir.verses);
-    set_tafsir_ibn_kathir(tafsirTexts);
-    setGroupVerses(currentGroupVerses);
-    };
-    fetchAllTafsirs();    
+      
     
     if (window.gtag) {
       console.log("custom event")
@@ -270,7 +295,7 @@ catch{
     >
         <InputBase
           sx={{ ml: 1, flex: 1 }}
-          placeholder="What is my mission"
+          placeholder="What is the purpose of life"
           value={userQuery}
           onChange={(e) => setUserQuery(e.target.value)}
           inputProps={{ maxLength: 100 }}
@@ -290,6 +315,24 @@ catch{
     </Paper>
 </Box>
 
+<Box display="flex" justifyContent="center" alignItems="center">
+    <Stack direction="row" spacing={1}>
+      <Chip 
+      sx={{ fontSize: "18px"}} 
+      avatar={<Avatar src={kabaa}></Avatar>} 
+      label="Quran" 
+      variant={selectQuranHadith==0? "default": "outlined"}
+      onClick={handleQuranSelect}/>
+      <Chip
+        sx={{ fontSize: "18px"}}
+        avatar={<Avatar src={masjid} />}
+        label="Hadith"
+        variant={selectQuranHadith==1? "default": "outlined"}
+        onClick={handleHadithSelect}
+      />
+    </Stack>
+
+</Box>
 
 <Box display="flex" justifyContent="flex-end" alignItems="center" padding={1}>
       <Button variant="contained" color="success" data-toggle="modal" data-target="#feedbackModal">
@@ -333,24 +376,18 @@ catch{
   </Box>
 </div>
 }
-      {
-        arabicText.map((text, index) => (
-          <div key={index}>
-            <GroupVerse nowPlaying={currentSpeechGroup} handleEnglishSpeech={(groupID, actionType, text) => handleSpeaking(groupID, actionType, text)} arabicSpeech={arabicSpeechURLs[index]} startVerse={groupVerses[index][0]} arabicText={text} englishTranslation={resultList[index]} tafsir_ibn_kathir={tafsir_ibn_kathir[index]} maarif_ul_quran={maarif_ul_quran[index]}></GroupVerse>
-            <Divider />
-          </div>
-        ))
-      }      
+      {selectQuranHadith==0?
+      <QuranResults arabicText={arabicText} arabicSpeechURLs={arabicSpeechURLs} groupVerses={groupVerses} resultList={resultList} tafsir_ibn_kathir={tafsir_ibn_kathir} maarif_ul_quran={maarif_ul_quran}/>
+        : !loading && <HadithResults currentPageHadithData={currentPageHadithData}/>
+      }
       {!loading && !showAlert && 
       <Box display="flex" justifyContent="center" alignItems="center" padding={4}>
-        <Pagination page={currentPage} count={10} color="primary" onChange={(event, value) => {search(value)}}/>
+        { selectQuranHadith==0?
+          <Pagination page={currentPageQuran} count={10} color="primary" onChange={(event, value) => {search(value)}}/>
+        : <Pagination page={currentPageHadith} count={10} color="primary" onChange={(event, value) => {search(value)}}/>
+        }
         </Box>
-      }
-
-
-
-
-      
+      }   
     </div>
   );
 };
