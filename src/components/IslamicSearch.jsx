@@ -16,7 +16,7 @@ import HadithResults from './HadithResults';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
-import masjid from '../images/image.png'
+import masjid from '../images/mosque.avif'
 import kabaa from '../images/kabaa.jpeg'
 
 
