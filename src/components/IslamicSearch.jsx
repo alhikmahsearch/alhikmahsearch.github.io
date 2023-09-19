@@ -334,7 +334,7 @@ catch{
 
 </Box>
 
-<Box display="flex" justifyContent="flex-end" alignItems="center" padding={1}>
+<Box display="flex" justifyContent="flex-end" alignItems="center" paddingTop={3}>
       <Button variant="contained" color="success" data-toggle="modal" data-target="#feedbackModal">
         Feedback
       </Button>
