@@ -112,7 +112,13 @@ const IslamicSearch = () => {
       const data = await response.json();
       setAllData(data)
       tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
-      }
+      if (window.gtag) {
+        console.log("custom event")
+        window.gtag('event', 'Quran_query', {
+          'query': 'hikmah tes'
+        });
+      }  
+    }
       else{
         tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
       }
@@ -159,6 +165,12 @@ const IslamicSearch = () => {
       const data = await response.json();
       setAllHadithData(data)
       setCurrentPageHadithData(data.slice((page_num-1)*10, (page_num)*10))
+      if (window.gtag) {
+        console.log("custom event")
+        window.gtag('event', 'Hadith_query', {
+          'query': 'hikmah tes'
+        });
+      }
       }
       else{
         setCurrentPageHadithData(allHadithData.slice((page_num-1)*10, (page_num)*10))
@@ -167,12 +179,12 @@ const IslamicSearch = () => {
     }
       
     
-    if (window.gtag) {
-      console.log("custom event")
-      window.gtag('event', 'query_enter', {
-        'query': 'hikmah tes'
-      });
-    }
+    // if (window.gtag) {
+    //   console.log("custom event")
+    //   window.gtag('event', 'query_enter', {
+    //     'query': 'hikmah tes'
+    //   });
+    // }
     
   };
 

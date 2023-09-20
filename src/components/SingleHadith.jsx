@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function SingleHadith({hadith}) {
     const generateReferenceLink = (reference) => {
         const [_, source, id] = reference.split(' ');
-        console.log("source, id:", source, id)
         let urlBase = '';
         if (source === 'Muslim') {
             urlBase = 'https://sunnah.com/muslim:';
@@ -22,7 +21,7 @@ function SingleHadith({hadith}) {
         <div className="container my-4">
           <div className="row">
             <div className="col-12">
-              <div className="card">
+              <div className="card" style={{backgroundColor: '#f3f3f3'}}>
                 <div className="card-body">
                   <div className="row">
                     <div className="col-6 text-left">
@@ -48,11 +47,9 @@ function SingleHadith({hadith}) {
                       <p className="card-text" style={{ fontSize: '1.2em' }}>{hadith["Arabic Hadith"]}</p>
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-12 text-center">
-                      <small className="text-muted">Reference: <a href={referenceLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none',  }}>{hadith["Id"]}</a></small>
-                    </div>
-                  </div>
+                </div>
+                <div className="card-footer">
+                  <small className="text-muted">Reference: <a href={referenceLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>{hadith["Id"]}</a></small>
                 </div>
               </div>
             </div>
