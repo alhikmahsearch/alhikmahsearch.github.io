@@ -374,16 +374,14 @@ catch{
   <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" padding={1}>
     <div style={{ marginBottom: '10px' }}>
       <Alert severity='info' style={{maxWidth: "500px"}}>
-        🌟<b>Discover Quranic Wisdom Through AI</b>🌟<br />
-        Enter your query in the search bar to explore relevant verses from the Holy Quran. Our advanced AI technology connects you with the teachings of the Quran like never before. Start your journey of knowledge and inspiration today.
-      </Alert>
+      🌟<b>Discover Quran and Hadith with AI</b>🌟<br />
+Enter your query in the search bar to discover relevant verses from the Holy Quran and Hadith. Our advanced AI technology connects you with the teachings of the Quran and Hadith for a comprehensive understanding. Start your journey of knowledge and inspiration today.      </Alert>
     </div>
     
     <div style={{ marginTop: '10px' }}>
       <Alert severity="warning" style={{maxWidth: "500px"}}>
         <b>Important Note</b><br />
-        Please be aware that the results returned may not always be the perfect match from the Quran or directly relevant to your query. For more in-depth understanding, consider referring to the Tafsir of the verses.
-      </Alert>
+        Please be aware that the results returned may not always be the perfect match from the Quran or Hadith or directly relevant to your query. For a more in-depth understanding, consider referring to the Tafsir of the verses and Hadith collections.      </Alert>
     </div>
   </Box>
 </div>
