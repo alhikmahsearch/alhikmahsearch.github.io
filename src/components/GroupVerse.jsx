@@ -95,7 +95,7 @@ function GroupVerse(props) {
     return (
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
             <div className="left-side">
-              <p>{props.startVerse}</p>
+              <Link underline="none" target="_blank" href={`https://quran.com/${(props.startVerse.split(":"))[0]}?startingVerse=${(props.startVerse.split(":"))[1]}`} color="inherit" style={{marginBottom: 8}}>{props.startVerse}</Link>
               {isPlaying ? <Tooltip title="Pause">
               <IconButton><PauseIcon onClick={handlePause}/></IconButton>
               </Tooltip> :
@@ -109,9 +109,6 @@ function GroupVerse(props) {
               <IconButton onClick={shareOnWhatsApp} style={{marginTop: 8}}>
                 <WhatsAppIcon />
               </IconButton>
-              </Tooltip>
-              <Tooltip title="See in Surah">
-                <Link href={`https://quran.com/${(props.startVerse.split(":"))[0]}?startingVerse=${(props.startVerse.split(":"))[1]}`} color="inherit" style={{marginTop: 10, marginLeft: 8}}><ArrowForwardIcon color='action'/></Link>
               </Tooltip>
             </div>
             
