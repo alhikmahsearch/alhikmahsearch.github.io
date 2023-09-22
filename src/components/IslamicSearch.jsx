@@ -293,13 +293,17 @@ catch{
 
   return (
     <div >
+      <Box paddingTop={7}>
       <h1>Al-Hikmah Search</h1>
+      </Box>
       <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/>
-      
+
+         
 <Box display="flex"
   justifyContent="center"
   alignItems="center"
   padding={3}>
+    
   <Paper
       onSubmit={(e) => e.preventDefault()}
       component="form"
@@ -331,13 +335,13 @@ catch{
     <Stack direction="row" spacing={1}>
       <Chip 
       sx={{ fontSize: "18px"}} 
-      avatar={<Avatar src={kabaa}></Avatar>} 
+      avatar={<Avatar src={kabaa} style={{width: "29px", height: "29px"}}></Avatar>} 
       label="Quran" 
       variant={selectQuranHadith==0? "default": "outlined"}
       onClick={handleQuranSelect}/>
       <Chip
         sx={{ fontSize: "18px"}}
-        avatar={<Avatar src={masjid} />}
+        avatar={<Avatar src={masjid} style={{width: "29px", height: "29px"}}/>}
         label="Hadith"
         variant={selectQuranHadith==1? "default": "outlined"}
         onClick={handleHadithSelect}

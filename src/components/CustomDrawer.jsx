@@ -13,6 +13,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuIcon from '@mui/icons-material/Menu';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import IconButton from '@mui/material/IconButton';
 
 export default function CustomDrawer(props) {
@@ -32,7 +33,7 @@ export default function CustomDrawer(props) {
       sx={{ width : "100%", maxWidth: 400 }}
       role="presentation"
 >
-  <IconButton><MenuIcon onClick={toggleDrawer(false)}/></IconButton>
+  <IconButton><MenuIcon fontSize='large' onClick={toggleDrawer(false)}/></IconButton>
       <List>
         <ListItem>
             
@@ -69,12 +70,11 @@ export default function CustomDrawer(props) {
   return (
         <div >
           <IconButton style={{
-          top: '0',
-          left: '0',
+          top: '0px',
+          left: '0px',
           position: "fixed",
-          width: 39,
           overflow: "hidden"
-        }} onClick={toggleDrawer(true)}><MenuIcon></MenuIcon></IconButton>
+        }} onClick={toggleDrawer(true)}><MenuIcon fontSize='large'></MenuIcon></IconButton>
           <Drawer
             anchor="left"
             open={drawerOpen}
