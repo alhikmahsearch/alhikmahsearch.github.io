@@ -68,12 +68,13 @@ export default function CustomDrawer(props) {
   );
 
   return (
-        <div >
+        <div>
           <IconButton style={{
           top: '0px',
           left: '0px',
           position: "fixed",
-          overflow: "hidden"
+          overflow: "hidden",
+          zIndex: 10
         }} onClick={toggleDrawer(true)}><MenuIcon fontSize='large'></MenuIcon></IconButton>
           <Drawer
             anchor="left"
