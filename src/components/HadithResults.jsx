@@ -33,9 +33,8 @@ function HadithResults(props) {
     <div>
         {props.currentPageHadithData.map((item, index) => (
           <div key={index}>
-            <SingleHadith hadith={item}/>
-          </div>))
-          
+            <SingleHadith hadith={item} token={props.token} userQuery={props.userQuery}/>
+          </div>)) 
         }
         {showScrollTopButton && (
       <button

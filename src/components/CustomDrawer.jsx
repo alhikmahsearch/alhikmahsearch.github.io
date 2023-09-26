@@ -33,7 +33,7 @@ export default function CustomDrawer(props) {
       sx={{ width : "100%", maxWidth: 400 }}
       role="presentation"
 >
-  <IconButton><MenuIcon fontSize='large' onClick={toggleDrawer(false)}/></IconButton>
+  <IconButton style={{padding: 20}}><MenuIcon onClick={toggleDrawer(false)}/></IconButton>
       <List>
         <ListItem>
             
@@ -70,12 +70,13 @@ export default function CustomDrawer(props) {
   return (
         <div>
           <IconButton style={{
-          top: '0px',
-          left: '0px',
-          position: "fixed",
-          overflow: "hidden",
-          zIndex: 10
-        }} onClick={toggleDrawer(true)}><MenuIcon fontSize='large'></MenuIcon></IconButton>
+          // top: '0px',
+          // left: '0px',
+          // position: "fixed",
+          // overflow: "hidden",
+          zIndex: 10,
+          color: "inherit"
+        }} onClick={toggleDrawer(true)}><MenuIcon ></MenuIcon></IconButton>
           <Drawer
             anchor="left"
             open={drawerOpen}

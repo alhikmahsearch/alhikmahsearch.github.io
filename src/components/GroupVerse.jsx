@@ -8,9 +8,17 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from '@mui/material/Link';
+import Snackbar from '@mui/material/Snackbar';
+import Fade from '@mui/material/Fade';
 import '../groupVerse.css';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function GroupVerse(props) {
     const [selectedTafsir, setSelectedTafsir] = useState('tafsir-ibn-kathir');
@@ -18,7 +26,7 @@ function GroupVerse(props) {
     const [arabicSpeechComplete, setArabicSpeechComplete] = useState(false)
     const [currentAudio, setCurrentAudio] = useState(null);
     const [arabicSpeechStart, setArabicSpeechStart] = useState(false);
-  
+    const [bookmarkstate, setBookmarkstate] = useState(false)
 
     const modalId = `bd-example-modal-lg-${props.startVerse}`; // create a unique id based on startVerse or some other unique prop
     
@@ -83,6 +91,34 @@ function GroupVerse(props) {
       window.open(whatsappUrl, '_blank');
     };
 
+    const handleBookmarkClose = () => {
+      setBookmarkstate(false)
+    };
+  
+    const addBookmark = async() => {
+      setBookmarkstate(true)
+
+      try {
+        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/add_quran_bookmark", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `${props.token}` // Use the Bearer schema for JWT tokens
+          },
+          body: JSON.stringify({ user_query: props.userQuery, verse:props.startVerse }) // Convert the body data to JSON string
+        });
+    
+        if (response.status !== 200) {
+          console.log("error message:", response.message)
+        }
+    
+        const data = await response.json();
+        console.log('Success:', data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
     useEffect(()=>{
       setIsPlaying(false)
       setArabicSpeechStart(false)
@@ -94,6 +130,16 @@ function GroupVerse(props) {
 
     return (
         <div className="group-verse-container" style={{marginLeft: "1%", marginRight: "1%"}}>
+          <Snackbar
+            autoHideDuration={2000}
+            open={bookmarkstate}
+            onClose={handleBookmarkClose}
+            TransitionComponent={Fade}
+          >
+        <Alert onClose={handleBookmarkClose} severity="success" sx={{ width: '100%' }}>
+          Bookmark Added!
+        </Alert>
+        </Snackbar>
             <div className="left-side">
               <Link underline="none" target="_blank" href={`https://quran.com/${(props.startVerse.split(":"))[0]}?startingVerse=${(props.startVerse.split(":"))[1]}`} color="inherit" style={{marginBottom: 8}}>{props.startVerse}</Link>
               {isPlaying ? <Tooltip title="Pause">
@@ -105,6 +151,11 @@ function GroupVerse(props) {
               <Tooltip title="Tafsir">
               <IconButton variant="text" style={{marginTop: 8}}><MenuBookIcon data-toggle="modal" data-target={`#${modalId}`} /></IconButton>
               </Tooltip>
+              {props.token && <Tooltip title="Bookmark">
+              <IconButton style={{marginTop: 8}}>
+                <BookmarkIcon onClick={addBookmark}/>
+              </IconButton>
+              </Tooltip>}
               <Tooltip title="Share">
               <IconButton onClick={shareOnWhatsApp} style={{marginTop: 8}}>
                 <WhatsAppIcon />

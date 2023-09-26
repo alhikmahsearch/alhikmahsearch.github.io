@@ -18,10 +18,11 @@ import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import masjid from '../images/mosque.avif'
 import kabaa from '../images/kabaa.jpeg'
+import Navbar from './Navbar';
 
 
 
-const IslamicSearch = () => {
+const IslamicSearch = (props) => {
   // Declare state variables
   const [showAlert, setShowAlert] = useState(true);
   const [userQuery, setUserQuery] = useState('');
@@ -177,15 +178,6 @@ const IslamicSearch = () => {
       }
       setLoading(false);
     }
-      
-    
-    // if (window.gtag) {
-    //   console.log("custom event")
-    //   window.gtag('event', 'query_enter', {
-    //     'query': 'hikmah tes'
-    //   });
-    // }
-    
   };
 
 // Function to fetch Arabic Text, Maarid-ul-Quran, and URL of one verse
@@ -293,10 +285,11 @@ catch{
 
   return (
     <div >
+      <Navbar updateToken={props.updateToken} token={props.token} handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/>
       <Box paddingTop={7}>
       <h1>Al-Hikmah Search</h1>
       </Box>
-      <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/>
+      {/* <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/> */}
 
          
 <Box display="flex"
@@ -350,28 +343,6 @@ catch{
 
 </Box>
 
-<Box display="flex" justifyContent="flex-end" alignItems="center" paddingTop={3}>
-      <Button variant="contained" color="success" data-toggle="modal" data-target="#feedbackModal">
-        Feedback
-      </Button>
-</Box>
-
-<div className="modal fade" id="feedbackModal" tabIndex="-1" role="dialog" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-  <div className="modal-dialog" role="document">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title" id="feedbackModalLabel">Feedback</h5>
-        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div className="modal-body">
-        <ContactForm />
-      </div>
-    </div>
-  </div>
-</div>
-
 
 {showAlert && 
 <div>
@@ -391,8 +362,8 @@ Enter your query in the search bar to discover relevant verses from the Holy Qur
 </div>
 }
       {selectQuranHadith==0?
-      <QuranResults arabicText={arabicText} arabicSpeechURLs={arabicSpeechURLs} groupVerses={groupVerses} resultList={resultList} tafsir_ibn_kathir={tafsir_ibn_kathir} maarif_ul_quran={maarif_ul_quran}/>
-        : !loading && <HadithResults currentPageHadithData={currentPageHadithData}/>
+      <QuranResults userQuery={userQuery} token={props.token} arabicText={arabicText} arabicSpeechURLs={arabicSpeechURLs} groupVerses={groupVerses} resultList={resultList} tafsir_ibn_kathir={tafsir_ibn_kathir} maarif_ul_quran={maarif_ul_quran}/>
+        : !loading && <HadithResults currentPageHadithData={currentPageHadithData} token={props.token} userQuery={userQuery}/>
       }
       {!loading && !showAlert && 
       <Box display="flex" justifyContent="center" alignItems="center" padding={4}>
