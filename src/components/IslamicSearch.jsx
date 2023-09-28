@@ -289,7 +289,6 @@ catch{
       <Box paddingTop={7}>
       <h1>Al-Hikmah Search</h1>
       </Box>
-      {/* <CustomDrawer handleSelectRecitation={handleSelectRecitation} handleSelectTranslation={handleSelectTranslation} translationSelected={translationID} recitationSelected={recitationId}/> */}
 
          
 <Box display="flex"

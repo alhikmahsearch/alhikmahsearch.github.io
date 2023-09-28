@@ -78,8 +78,9 @@ function Bookmarks(props) {
         }, [])
           
   return (
-    <div>Bookmarks
-        <Box sx={{ position: 'absolute', left: 15, top: 15 }}>
+    <div>
+        
+        <Box sx={{ position: 'absolute', left: 15, top: 15}}>
             <Button 
             onClick={goHome}
             sx={{ 
@@ -90,7 +91,8 @@ function Bookmarks(props) {
             <KeyboardReturnIcon />Home
             </Button>
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center">
+        <h3 style={{paddingTop: "50px"}}>Bookmarks</h3>
+        <Box display="flex" justifyContent="center" alignItems="center" padding={3}>
             <Stack direction="row" spacing={1}>
             <Chip 
             sx={{ fontSize: "18px"}} 
