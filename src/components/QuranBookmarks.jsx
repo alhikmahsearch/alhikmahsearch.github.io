@@ -10,6 +10,8 @@ import Link from '@mui/material/Link';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import ClearIcon from '@mui/icons-material/Clear';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 function QuranBookmarks(props) {
     const [quranBookmarks, setQuranBookmarks] = useState([]);
@@ -64,9 +66,9 @@ function QuranBookmarks(props) {
           </AccordionSummary>
           <AccordionDetails>
             <Typography>
-            <Stack style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} spacing={1}>
+            <Stack style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} >
               {bookmark.verses.map((verse, verseIndex) => (
-                <div key={verseIndex} style={{ display: 'flex', alignItems: 'center' }}>
+                <div key={verseIndex} style={{ display: 'flex', alignItems: 'center', paddingRight: '10px'}}>
                 <Link 
                   underline="none" 
                   target="_blank" 
@@ -77,7 +79,7 @@ function QuranBookmarks(props) {
                   <Chip label={verse} color="success" />
                 </Link>
                 <ClearIcon 
-                  style={{ cursor: 'pointer'}}
+                  style={{ cursor: 'pointer', paddingBottom: '5px'}}
                   onClick={() => handleDeleteQuran(bookmark.user_query, verse)} 
                 />
               </div>

@@ -26,28 +26,6 @@ function HadithBookmarks(props) {
         }
         return `${urlBase}${id}`;
       };
-
-    // const handleDeleteHadith = (user_query, hadithID) => {
-    // fetch('https://islamicsearch-4dbe9a36a60c.herokuapp.com/delete_hadith_bookmark', {
-    //     method: 'POST',
-    //     headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': props.token, // Replace with your token
-    //     },
-    //     body: JSON.stringify({
-    //     user_query: user_query,
-    //     hadithID: hadithID,
-    //     }),
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //     console.log('Hadith deleted successfully:', data);
-    //     // You may want to refresh the list or perform other UI updates here
-    // })
-    // .catch(error => {
-    //     console.error('Error deleting hadith:', error);
-    // });
-    // };
       
     const handleDeleteHadith = (user_query, hadithID) => {
         fetch('https://islamicsearch-4dbe9a36a60c.herokuapp.com/delete_hadith_bookmark', {
@@ -100,9 +78,9 @@ function HadithBookmarks(props) {
           </AccordionSummary>
           <AccordionDetails>
             <Typography>
-            <Stack style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} spacing={1}>
+            <Stack style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}} >
               {bookmark.hadithIDs.map((hadithID, hadithIndex) => (
-                <div key={hadithIndex} style={{ display: 'flex', alignItems: 'center' }}>
+                <div key={hadithIndex} style={{ display: 'flex', alignItems: 'center', paddingRight: "10px"}}>
                 <Link 
                   underline="none" 
                   target="_blank" 
@@ -113,9 +91,10 @@ function HadithBookmarks(props) {
                   <Chip label={hadithID} color="success" />
                 </Link>
                 <ClearIcon 
-                  style={{ cursor: 'pointer'}}
+                  style={{ cursor: 'pointer', paddingBottom: '5px'}}
                   onClick={() => handleDeleteHadith(bookmark.user_query, hadithID)} 
                 />
+                
               </div>
               ))}
               </Stack>

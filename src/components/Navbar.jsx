@@ -19,7 +19,7 @@ function Navbar(props) {
 
     return (
         <Box sx={{ flexGrow: 1}}>
-          <AppBar position="static" >
+          <AppBar position="static" style={{background: '#4169E1'}}>
             <Toolbar>
             <CustomDrawer handleSelectRecitation={props.handleSelectRecitation} handleSelectTranslation={props.handleSelectTranslation} translationSelected={props.translationSelected} recitationSelected={props.recitationSelected}/>
             <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
