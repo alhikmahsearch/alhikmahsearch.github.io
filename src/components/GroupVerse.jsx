@@ -134,7 +134,7 @@ function GroupVerse(props) {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({query: props.userQuery, document_result: props.englishTranslation, label: label})
+          body: JSON.stringify({query: props.userQuery, document_result: props.englishTranslation, label: label, data_type: "Quran"})
         })
       }
       catch (error) {

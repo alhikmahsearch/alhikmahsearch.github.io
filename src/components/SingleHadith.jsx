@@ -87,7 +87,7 @@ function SingleHadith({hadith, token, userQuery}) {
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({query: userQuery, document_result: cleanText(hadith["English Chapter Name"]+". "+hadith["English Hadith"]), label: label})
+            body: JSON.stringify({query: userQuery, document_result: cleanText(hadith["English Chapter Name"]+". "+hadith["English Hadith"]), label: label, data_type: "Hadith"})
           })
         }
         catch (error) {
