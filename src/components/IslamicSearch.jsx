@@ -120,7 +120,7 @@ const IslamicSearch = (props) => {
         window.gtag('event', 'Quran_query', {
           'query': 'hikmah tes'
         });
-      }  
+      }
     }
       else{
         tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
@@ -163,9 +163,10 @@ const IslamicSearch = (props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_query: userQuery }),
+        body: JSON.stringify({ user_query: tempUserQuery }),
       });
       const data = await response.json();
+      console.log("data is:", data)
       setAllHadithData(data)
       setCurrentPageHadithData(data.slice((page_num-1)*10, (page_num)*10))
       if (window.gtag) {

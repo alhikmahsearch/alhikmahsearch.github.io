@@ -5,7 +5,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Snackbar from '@mui/material/Snackbar';
 import Fade from '@mui/material/Fade';
 import MuiAlert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import tick_icon from '../images/tick_icon.svg'
+import cross_icon from '../images/cross-icon.svg'
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -13,7 +17,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function SingleHadith({hadith, token, userQuery}) {
   const [bookmarkstate, setBookmarkstate] = useState(false)
-
+  const [showRelevancy, setShowRelevancy] = useState(true);
     const generateReferenceLink = (reference) => {
         const [_, source, id] = reference.split(' ');
         let urlBase = '';
@@ -29,10 +33,27 @@ function SingleHadith({hadith, token, userQuery}) {
     
       const referenceLink = generateReferenceLink(hadith["Id"]);
       
+      
+      function cleanText(text) {
+        // Remove (ﷺ) from the text
+        let cleanedText = text.replace(/\(ﷺ\)/g, "");
+        
+        // Remove empty lines and spaces
+        // Splitting the string into lines, trimming each line, filtering out empty lines,
+        // and then joining back into a single string with spaces.
+        cleanedText = cleanedText.split('\n')
+                                 .map(line => line.trim())
+                                 .filter(line => line)
+                                 .join(' ');
+        
+        return cleanedText;
+    }
+
       const handleBookmarkClose = () => {
         setBookmarkstate(false)
       };
       
+
       const addBookmark = async() => {
         setBookmarkstate(true)
 
@@ -53,6 +74,23 @@ function SingleHadith({hadith, token, userQuery}) {
           const data = await response.json();
           console.log('Success:', data);
         } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+
+
+      const handleResultRelevancy = async (label)=> {
+        setShowRelevancy(false)
+        try {
+          const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/store_query_document", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({query: userQuery, document_result: cleanText(hadith["English Chapter Name"]+". "+hadith["English Hadith"]), label: label})
+          })
+        }
+        catch (error) {
           console.error('Error:', error);
         }
       }
@@ -98,13 +136,22 @@ function SingleHadith({hadith, token, userQuery}) {
                     </div>
                   </div>
                 </div>
+                {showRelevancy && <div className="icon-toggle-btn-group" style={{marginBottom: '5px'}}>
+                      <span style={{color: '#808080', marginRight: '10px'}}>Was this result relevant:</span>
+                      <Tooltip title="Mark as Relevant" arrow>
+                        <Button variant="contained" color="success" className='me-2' onClick={() => handleResultRelevancy(1)}><img src={tick_icon} style={{width: '20px'}}/></Button>
+                      </Tooltip>
+                      <Tooltip title="Mark as Irrelevant" arrow>
+                        <Button variant="contained" color="error" onClick={() => handleResultRelevancy(-1)}><img src={cross_icon} style={{width: '20px'}}/></Button>
+                      </Tooltip>
+                    </div>}
                 <div className="card-footer" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Tooltip>
+                  <small className="text-muted" style={{marginTop: 7}}>Reference: <a href={referenceLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit'}}>{hadith["Id"]}</a></small>
+                  {token && <Tooltip>
                     <IconButton>
                       <BookmarkIcon onClick={addBookmark}/>
                     </IconButton>
-                  </Tooltip>
-                  <small className="text-muted" style={{marginTop: 7}}>Reference: <a href={referenceLink} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit'}}>{hadith["Id"]}</a></small>
+                  </Tooltip>}
                 </div>
               </div>
             </div>
