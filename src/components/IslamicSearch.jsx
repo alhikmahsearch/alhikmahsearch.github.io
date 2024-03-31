@@ -26,6 +26,7 @@ const IslamicSearch = (props) => {
   // Declare state variables
   const [showAlert, setShowAlert] = useState(true);
   const [userQuery, setUserQuery] = useState('');
+  const [tempUserQuery, setTempUserQuery] = useState('');
   const [resultList, setResultList] = useState([]);
   const [metadataList, setMetadataList] = useState([]); // Store metadata separately
   const [loading, setLoading] = useState(false);
@@ -83,8 +84,9 @@ const IslamicSearch = (props) => {
   
   // Function to handle search request
   const search = async (page_num, search_bar=false, search_type=undefined) => {
+    setUserQuery(tempUserQuery)
     if (search_type==undefined) search_type = selectQuranHadith 
-    if (userQuery.length == 0) return
+    if (tempUserQuery.length == 0) return
     // go to empty states when search entered
     if (search_bar){
       setShowAlert(false);
@@ -108,7 +110,7 @@ const IslamicSearch = (props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_query: userQuery }),
+        body: JSON.stringify({ user_query: tempUserQuery }),
       });
       const data = await response.json();
       setAllData(data)
@@ -304,8 +306,8 @@ catch{
         <InputBase
           sx={{ ml: 1, flex: 1 }}
           placeholder="What is the purpose of life"
-          value={userQuery}
-          onChange={(e) => setUserQuery(e.target.value)}
+          value={tempUserQuery}
+          onChange={(e) => setTempUserQuery(e.target.value)}
           inputProps={{ maxLength: 100 }}
         />
        

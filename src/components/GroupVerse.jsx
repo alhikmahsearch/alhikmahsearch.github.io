@@ -15,6 +15,12 @@ import Snackbar from '@mui/material/Snackbar';
 import Fade from '@mui/material/Fade';
 import '../groupVerse.css';
 import MuiAlert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import tick_icon from '../images/tick_icon.svg'
+import cross_icon from '../images/cross-icon.svg'
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -26,7 +32,8 @@ function GroupVerse(props) {
     const [arabicSpeechComplete, setArabicSpeechComplete] = useState(false)
     const [currentAudio, setCurrentAudio] = useState(null);
     const [arabicSpeechStart, setArabicSpeechStart] = useState(false);
-    const [bookmarkstate, setBookmarkstate] = useState(false)
+    const [bookmarkstate, setBookmarkstate] = useState(false);
+    const [showRelevancy, setShowRelevancy] = useState(true);
 
     const modalId = `bd-example-modal-lg-${props.startVerse}`; // create a unique id based on startVerse or some other unique prop
     
@@ -119,6 +126,22 @@ function GroupVerse(props) {
       }
     }
 
+    const handleResultRelevancy = async (label)=> {
+      setShowRelevancy(false)
+      try {
+        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/store_query_document", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({query: props.userQuery, document_result: props.englishTranslation, label: label})
+        })
+      }
+      catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
     useEffect(()=>{
       setIsPlaying(false)
       setArabicSpeechStart(false)
@@ -162,10 +185,18 @@ function GroupVerse(props) {
               </IconButton>
               </Tooltip>
             </div>
-            
             <div className="right-side">
               <p dir="rtl" style={{fontSize: 30}}>{props.arabicText}</p>
               <p>{props.englishTranslation}</p>
+              {showRelevancy && <div className="icon-toggle-btn-group">
+                <span style={{color: '#808080', marginRight: '10px'}}>Was this result relevant:</span>
+                <Tooltip title="Mark as Relevant" arrow>
+                  <Button variant="contained" color="success" className='me-2' onClick={() => handleResultRelevancy(1)}><img src={tick_icon} style={{width: '20px'}}/></Button>
+                </Tooltip>
+                <Tooltip title="Mark as Irrelevant" arrow>
+                  <Button variant="contained" color="error" onClick={() => handleResultRelevancy(-1)}><img src={cross_icon} style={{width: '20px'}}/></Button>
+                </Tooltip>
+              </div>}
             </div>
             
             <div className="modal fade" id={modalId} tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
