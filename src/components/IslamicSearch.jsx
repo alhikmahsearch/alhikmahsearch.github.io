@@ -105,16 +105,32 @@ const IslamicSearch = (props) => {
       if (search_bar || resultList.length==0){
         setCurrentPageQuran(1)
         setLoading(true)
-        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Quran", {
+        const response = await fetch("https://f52d8mzut9.execute-api.ap-south-1.amazonaws.com/dev/Quran", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_query: tempUserQuery }),
+        body: JSON.stringify({ query: tempUserQuery, path: "/Quran" }),
       });
       const data = await response.json();
       setAllData(data)
-      tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+      // tempData = {"documents" : [data["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [data["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+
+      // tempData = {"documents": data["body"]["matches"].map((match) => match["metadata"]["documents"]).slice((page_num-1)*10, (page_num)*10), "metadatas": data["body"]["matches"].map((match) => ({"start": match["metadata"]["start"], "end": match["metadata"]["end"], "verse_key": match["metadata"]["verse_key"], "verse_list": match["metadata"]["verse_list"]}).slice((page_num-1)*10, (page_num)*10))}
+      let slicedData = data["body"]["matches"].slice((page_num-1)*10, page_num*10);
+
+      tempData = {
+        documents: slicedData.map(match => match["metadata"]["documents"]),
+        metadatas: slicedData.map(match => ({
+          start: match["metadata"]["start"],
+          end: match["metadata"]["end"],
+          verse_key: match["metadata"]["verse_key"],
+          verse_list: match["metadata"]["verse_list"]
+        }))
+      };
+
+      console.log("tempData:", tempData)
+
       if (window.gtag) {
         console.log("custom event")
         window.gtag('event', 'Quran_query', {
@@ -123,12 +139,24 @@ const IslamicSearch = (props) => {
       }
     }
       else{
-        tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+        // tempData = {"documents" : [allData["documents"][0].slice((page_num-1)*10, (page_num)*10)], "metadatas": [allData["metadatas"][0].slice((page_num-1)*10, (page_num)*10)]}
+        let slicedData = allData["body"]["matches"].slice((page_num-1)*10, page_num*10);
+
+        tempData = {
+          documents: slicedData.map(match => match["metadata"]["documents"]),
+          metadatas: slicedData.map(match => ({
+            start: match["metadata"]["start"],
+            end: match["metadata"]["end"],
+            verse_key: match["metadata"]["verse_key"],
+            verse_list: match["metadata"]["verse_list"]
+          }))
+        };
+  
       }
 
       if (tempData && Array.isArray(tempData["documents"]) && Array.isArray(tempData["metadatas"])) {
-        setResultList(tempData["documents"][0]);
-        setMetadataList(tempData["metadatas"][0]);
+        setResultList(tempData["documents"]);
+        setMetadataList(tempData["metadatas"]);
       }
 
       // Function to fetch Tafsir by Ibn Kathir and the list of verses in one verseKey group
@@ -143,7 +171,7 @@ const IslamicSearch = (props) => {
 
       // Function to fetch all groups Tafsir by Ibn Kathir data
       const fetchAllTafsirs = async () => {
-      const startVerseKeys = tempData["metadatas"][0].map(singleGroup => singleGroup['verse_key']);
+      const startVerseKeys = tempData["metadatas"].map(singleGroup => singleGroup['verse_key']);
       const tafsirs = await Promise.all(startVerseKeys.map(fetchTafsir));
       
       const tafsirTexts = tafsirs.map(tafsir => tafsir.text);
