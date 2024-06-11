@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.86346378.css",
-    "main.js": "/static/js/main.31339562.js",
+    "main.js": "/static/js/main.102cdbe9.js",
     "static/js/787.295a35c4.chunk.js": "/static/js/787.295a35c4.chunk.js",
     "static/media/image.png": "/static/media/image.d71bce18a5df7aa2b52e.png",
     "static/media/mosque.avif": "/static/media/mosque.0f0f891298eadac57a19.avif",
@@ -10,11 +10,11 @@
     "static/media/cross-icon.svg": "/static/media/cross-icon.7f209b59ff211481ddb327823c92747d.svg",
     "static/media/tick_icon.svg": "/static/media/tick_icon.aede9b254244b4ee165484a90a30cc6d.svg",
     "main.86346378.css.map": "/static/css/main.86346378.css.map",
-    "main.31339562.js.map": "/static/js/main.31339562.js.map",
+    "main.102cdbe9.js.map": "/static/js/main.102cdbe9.js.map",
     "787.295a35c4.chunk.js.map": "/static/js/787.295a35c4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.86346378.css",
-    "static/js/main.31339562.js"
+    "static/js/main.102cdbe9.js"
   ]
 }
