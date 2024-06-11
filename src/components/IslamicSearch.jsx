@@ -186,12 +186,12 @@ const IslamicSearch = (props) => {
       if (search_bar || allHadithData.length==0){
         setLoading(true)
         setCurrentPageHadith(1)
-        const response = await fetch("https://islamicsearch-4dbe9a36a60c.herokuapp.com/Hadith", {
+        const response = await fetch("https://f52d8mzut9.execute-api.ap-south-1.amazonaws.com/dev/Quran", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ user_query: tempUserQuery }),
+        body: JSON.stringify({ query: tempUserQuery, path: "/Hadith"}),
       });
       const data = await response.json();
       console.log("data is:", data)
